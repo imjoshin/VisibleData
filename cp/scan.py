@@ -1,13 +1,13 @@
 from tweepy.streaming import StreamListener
 from tweepy import Stream
-import tweepy, time, signal, termios, struct, fcntl, sys, readline, serial
+from subprocess import call
+import tweepy, time, signal, termios, struct, fcntl, sys, readline, datetime
 import settings, auth
 
 __author__ = 'Josh Johnson, Riley Hirn'
 
 #count of tweets
 count = 0
-ard = serial.Serial(settings.ardport, 9600, timeout=5)
 
 def main():
     print "\n"
@@ -30,7 +30,7 @@ def main():
     print chr(27) + "[2J"
 
     stream = Stream(authorization, listener)
-    print 'Now scanning for #' + settings.hashtag + '...\n\n\n\n'
+    print 'Now scanning for #%s...\n\n\n\n' % (settings.hashtag)
 
     stream.filter(track=['#' + settings.hashtag])
 
@@ -40,24 +40,10 @@ class TweetListener(StreamListener):
 
 	# Tweet found with given hashtag
 	def on_status(self, status):
-		blank_current_readline()
-		blank_current_readline()
-        blank_current_readline()
-
-        text = status.text.encode('utf-8')
-        ard.write(text)
-        print 'Tweet: ' + text
-        print 'Tweet Author: @' + status.user.screen_name
-
-        print '\n'
-
-        count += 1
-        print "\033[32m-----------------------\033[0m"
-        print "\033[7mTweets scanned: %d\033[0m" % (count,)
-        print "\033[32m-----------------------\033[0m"
+		printAndSend(status)
 
 	def on_error(self, status_code):
-		print '\033[22;31mTweet error: \033[4;31m' + str(status_code) + '\033[0m'
+		print '\033[22;31mTweet error: \033[4;31m%s\033[0m' % (str(status_code))
 		if status_code == 420:
 			reconnect(10)
 		else:
@@ -74,39 +60,42 @@ class TweetListener(StreamListener):
 # functions #
 #############
 
-# Print method for debug mode
-def debug_print(text):
-	if settings.debug:
-		print "\033[0m\033[22;36m" + text.encode('utf-8') + '\033[0m'
+# Parse the tweet for selection and handle it accordingly
+def printAndSend(status):
+    print 'Tweet: \033[4m%s\033[0m' % (status.text.encode('utf-8') + "\033[0m")
+    print 'Tweet Author: \033[35m@%s\033[0m' % (status.user.screen_name)
+    print 'ID: \033[33m%s\033[0m' % (status.id)
+    print 'Timestamp: \033[36m%s\033[0m' % (status.created_at - datetime.timedelta(hours=5))
+    print '\n'
+
+    text = '@%s: %s' % (status.user.screen_name, '' + status.text.encode('utf-8'))
+    call("echo -n %s > %s" % (text, settings.ardport), shell=True)
 
 def reconnect(wait):
+		for i in range(wait, 0, -1):
+			print "Reconnecting in %d seconds..." % (i,)
+			time.sleep(1)
+			blank_current_readline()
 
-	for i in range(wait, 0, -1):
-		print "Reconnecting in %d seconds..." % (i,)
-		time.sleep(1)
-		blank_current_readline()
+		print 'Reconnecting...'
 
-	print 'Reconnecting...'
+		auth = tweepy.OAuthHandler(settings.cKey, settings.cSecret)
+		auth.set_access_token(settings.aToken, settings.aSecret)
 
-	auth = tweepy.OAuthHandler(settings.cKey, settings.cSecret)
-	auth.set_access_token(settings.aToken, settings.aSecret)
+		api = tweepy.API(auth)
+		listener = TweetListener()
 
-	api = tweepy.API(auth)
-	listener = TweetListener()
+		debug_print('\nStarting stream for #%s...' % (settings.hashtag1,))
 
-	debug_print('\nStarting stream for #%s...' % (settings.hashtag1,))
+		stream = Stream(auth, listener)
+		print 'Now scanning for #%s...\n\n\n\n' % (settings.hashtag)
 
-	stream = Stream(auth, listener)
-	print 'Now scanning for #' + settings.hashtag1 + '...'
-
-	stream.filter(track=['#' + settings.hashtag1])
+		stream.filter(track=['#' + settings.hashtag1])
 
 def blank_current_readline():
 	# Next line said to be reasonably portable for various Unixes
 	(rows,cols) = struct.unpack('hh', fcntl.ioctl(sys.stdout, termios.TIOCGWINSZ,'1234'))
-
 	text_len = len(readline.get_line_buffer())+2
-
 	# ANSI escape sequences (All VT100 except ESC[0G)
 	sys.stdout.write('\x1b[1A')                         # Move cursor up
 	sys.stdout.write('\x1b[0G')                         # Move to start of line
