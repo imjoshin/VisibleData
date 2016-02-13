@@ -1,7 +1,7 @@
 from tweepy.streaming import StreamListener
 from tweepy import Stream
 from subprocess import call
-import tweepy, time, signal, termios, struct, fcntl, sys, readline, datetime
+import tweepy, time, signal, termios, struct, fcntl, sys, readline, datetime, math
 import settings, auth
 
 __author__ = 'Josh Johnson, Riley Hirn'
@@ -68,9 +68,13 @@ def printAndSend(status):
     print 'Timestamp: \033[36m%s\033[0m' % (status.created_at - datetime.timedelta(hours=5))
     print '\n'
 
-    text = '@%s: %s' % (status.user.screen_name, '' + status.text.encode('utf-8'))
-    call("echo -n '%s' > %s" % (text, settings.ardport), shell=True)
-    print "CALLED: echo -n '%s' > %s" % (text, settings.ardport)
+    text = '@%s: %s\n' % (status.user.screen_name, '' + status.text.encode('utf-8'))
+    print "range: 0 to " + str(int(math.ceil(len(text) / 64)))
+    for i in range(0, int(math.ceil(len(text) / 64)) + 1):
+        print "substring: [%d, %d]" % (i * 64, (i + 1) * 64 - 1)
+        call("echo -n '%s' > %s" % (text[i * 64 : (i + 1) * 64 - 1], settings.ardport), shell=True)
+        print "CALLED: echo -n '%s' > %s" % (text[i * 64 : (i + 1) * 64], settings.ardport)
+        time.sleep(1)
 
 def reconnect(wait):
 		for i in range(wait, 0, -1):

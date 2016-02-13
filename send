@@ -1,0 +1,10 @@
+#! /bin/bash
+
+c=0
+while true
+do
+c=$((c+1))
+echo '@Josh_Johnson7: Test #wwhack ' $c > /dev/ttyACM0
+sleep 10
+done
+
