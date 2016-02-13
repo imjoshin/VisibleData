@@ -69,33 +69,42 @@ def printAndSend(status):
     print '\n'
 
     text = '@%s: %s\n' % (status.user.screen_name, '' + status.text.encode('utf-8'))
+    text = filterText(text)
     #print "range: 0 to " + str(int(math.ceil(len(text) / 64)))
     for i in range(0, int(math.ceil(len(text) / 64)) + 1):
         #print "substring: [%d, %d]" % (i * 64, (i + 1) * 64 - 1)
         call("echo -n '%s' > %s" % (text[i * 64 : (i + 1) * 64 - 1], settings.ardport), shell=True)
         #print "CALLED: echo -n '%s' > %s" % (text[i * 64 : (i + 1) * 64], settings.ardport)
-        time.sleep(1)
+        time.sleep(5)
+
+#filter text
+def filterText(string):
+    ret = ""
+    for i in range(0, len(string)):
+        if (ord(string[i]) >= 32 and ord(string[i]) <= 126) or ord(string[i]) is 10:
+            ret += string[i]
+    return ret;
 
 def reconnect(wait):
-		for i in range(wait, 0, -1):
-			print "Reconnecting in %d seconds..." % (i,)
-			time.sleep(1)
-			blank_current_readline()
+	for i in range(wait, 0, -1):
+		print "Reconnecting in %d seconds..." % (i,)
+		time.sleep(1)
+		blank_current_readline()
 
-		print 'Reconnecting...'
+	print 'Reconnecting...'
 
-		auth = tweepy.OAuthHandler(settings.cKey, settings.cSecret)
-		auth.set_access_token(settings.aToken, settings.aSecret)
+	auth = tweepy.OAuthHandler(settings.cKey, settings.cSecret)
+	auth.set_access_token(settings.aToken, settings.aSecret)
 
-		api = tweepy.API(auth)
-		listener = TweetListener()
+	api = tweepy.API(auth)
+	listener = TweetListener()
 
-		debug_print('\nStarting stream for #%s...' % (settings.hashtag1,))
+	debug_print('\nStarting stream for #%s...' % (settings.hashtag1,))
 
-		stream = Stream(auth, listener)
-		print 'Now scanning for #%s...\n\n\n\n' % (settings.hashtag)
+	stream = Stream(auth, listener)
+	print 'Now scanning for #%s...\n\n\n\n' % (settings.hashtag)
 
-		stream.filter(track=['#' + settings.hashtag1])
+	stream.filter(track=['#' + settings.hashtag1])
 
 def blank_current_readline():
 	# Next line said to be reasonably portable for various Unixes
