@@ -1,2 +1,2 @@
 hashtag = "wwhack"
-ardport = "/dev/ttyACM0"
+ardport = "/dev/null"

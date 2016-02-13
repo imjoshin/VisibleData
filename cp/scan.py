@@ -42,15 +42,14 @@ class TweetListener(StreamListener):
 	def on_status(self, status):
 		blank_current_readline()
 		blank_current_readline()
-		blank_current_readline()
+        blank_current_readline()
 
-		print 'Tweet: ' + status.text.encode('utf-8')
-		print 'Tweet Author: @' + status.user.screen_name
+        text = status.text.encode('utf-8')
+        ard.write(text)
+        print 'Tweet: ' + text
+        print 'Tweet Author: @' + status.user.screen_name
 
-		print '\n'
-
-		global ard, count
-        ard.write(tweet.text.encode('utf-8'))
+        print '\n'
 
         count += 1
         print "\033[32m-----------------------\033[0m"
