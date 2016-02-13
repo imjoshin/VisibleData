@@ -69,7 +69,8 @@ def printAndSend(status):
     print '\n'
 
     text = '@%s: %s' % (status.user.screen_name, '' + status.text.encode('utf-8'))
-    call("echo -n %s > %s" % (text, settings.ardport), shell=True)
+    call("echo -n '%s' > %s" % (text, settings.ardport), shell=True)
+    print "CALLED: echo -n '%s' > %s" % (text, settings.ardport)
 
 def reconnect(wait):
 		for i in range(wait, 0, -1):
