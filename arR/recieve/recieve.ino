@@ -1,9 +1,9 @@
 #include <string.h>
 const int readPin = A0;
-const int baud = 20;
+const int baud = 6;
 const int limit = 130;
 
-#define debug
+//#define debug
 
 void setup() {
   pinMode(readPin, INPUT);
@@ -46,22 +46,28 @@ void loop() {
     
   i = ((check[0]) + (check[1] * 2) + (check[2] *4) + (check[3] * 8)) - 1;
   if(i != -1) {
+    #ifdef debug
     Serial.print("flipping : ");
     Serial.print(i);
+    #endif
     bits[i] = bits[i] == 1 ? 0 : 1;
   }
     
   //move bits from arrya to char
+  #ifdef debug
   Serial.print("  in: ");
+  #endif
   for(i = 0; i < 12; i++) {
-    in = in << 1;
     if(i == 0 || i == 1 || i == 3 || i == 7)
       continue;
+    in = in << 1;
     if(bits[i] == 1) {
       in++;
+      #ifdef debug
       Serial.print("1");
     } else {
       Serial.print("0");
+      #endif
     }
   }
 

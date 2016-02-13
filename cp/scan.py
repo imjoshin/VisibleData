@@ -69,11 +69,11 @@ def printAndSend(status):
     print '\n'
 
     text = '@%s: %s\n' % (status.user.screen_name, '' + status.text.encode('utf-8'))
-    print "range: 0 to " + str(int(math.ceil(len(text) / 64)))
+    #print "range: 0 to " + str(int(math.ceil(len(text) / 64)))
     for i in range(0, int(math.ceil(len(text) / 64)) + 1):
-        print "substring: [%d, %d]" % (i * 64, (i + 1) * 64 - 1)
+        #print "substring: [%d, %d]" % (i * 64, (i + 1) * 64 - 1)
         call("echo -n '%s' > %s" % (text[i * 64 : (i + 1) * 64 - 1], settings.ardport), shell=True)
-        print "CALLED: echo -n '%s' > %s" % (text[i * 64 : (i + 1) * 64], settings.ardport)
+        #print "CALLED: echo -n '%s' > %s" % (text[i * 64 : (i + 1) * 64], settings.ardport)
         time.sleep(1)
 
 def reconnect(wait):

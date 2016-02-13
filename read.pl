@@ -2,7 +2,7 @@
 
 use Device::SerialPort;
 
-my $port = Device::SerialPort->new("/dev/ttyUSB0");
+my $port = Device::SerialPort->new("/dev/ttyACM1");
 $port->databits(8);
 $port->baudrate(19200);
 $port->parity("none");

@@ -1,5 +1,5 @@
 const int ledPin =  13; 
-const int baud = 4;
+const int baud = 6;
 
 void setup() {
   Serial.begin(9600);
@@ -20,24 +20,24 @@ void loop() {
     
     
     //create hamming code
-    bits[11] = in < 0 ? 1 : 0;
-    in = in << 1;
-    bits[10] = in < 0 ? 1 : 0;
-    in = in << 1;
-    bits[9] = in < 0 ? 1 : 0;
-    in = in << 1;
-    bits[8] = in < 0 ? 1 : 0;
-    in = in << 1;
-    bits[6] = in < 0 ? 1 : 0;
-    in = in << 1;
-    bits[5] = in < 0 ? 1 : 0;
+    bits[2] = in < 0 ? 1 : 0;
     in = in << 1;
     bits[4] = in < 0 ? 1 : 0;
     in = in << 1;
-    bits[2] = in < 0 ? 1 : 0;
+    bits[5] = in < 0 ? 1 : 0;
+    in = in << 1;
+    bits[6] = in < 0 ? 1 : 0;
+    in = in << 1;
+    bits[8] = in < 0 ? 1 : 0;
+    in = in << 1;
+    bits[9] = in < 0 ? 1 : 0;
+    in = in << 1;
+    bits[10] = in < 0 ? 1 : 0;
+    in = in << 1;
+    bits[11] = in < 0 ? 1 : 0;
     in = in << 1;
     
-    
+    /*
     Serial.print(bits[2]);
     Serial.print(bits[4]);
     Serial.print(bits[5]);
@@ -45,13 +45,14 @@ void loop() {
     Serial.print(bits[8]);
     Serial.print(bits[9]);
     Serial.print(bits[10]);
-    Serial.println(bits[11]);
-    
+    Serial.print(bits[11]);
+    Serial.print("  ");
+    */
     bits[0] = (bits[2] + bits[4] + bits[6] + bits[8] + bits[10]) % 2;
     bits[1] = (bits[2] + bits[5] + bits[6] + bits[9] + bits[10]) % 2;
-    bits[3] = (bits[3] + bits[4] + bits[5] + bits[6] + bits[11]) % 2;
-    bits[7] = (bits[7] + bits[8] + bits[9] + bits[10] + bits[11]) % 2;
-    
+    bits[3] = (bits[4] + bits[5] + bits[6] + bits[11]) % 2;
+    bits[7] = (bits[8] + bits[9] + bits[10] + bits[11]) % 2;
+    /*
     Serial.print(bits[0]);
     Serial.print(bits[1]);
     Serial.print(bits[2]);
@@ -64,6 +65,7 @@ void loop() {
     Serial.print(bits[9]);
     Serial.print(bits[10]);
     Serial.println(bits[11]);
+    */
     //start bit
     start = millis();
     digitalWrite(ledPin, HIGH);
@@ -91,6 +93,6 @@ void loop() {
     
     //stop bit
     digitalWrite(ledPin, LOW);
-    delay(baud * 2);
+    delay(baud);
   }
 }
