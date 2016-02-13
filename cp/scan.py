@@ -1,12 +1,13 @@
 from tweepy.streaming import StreamListener
 from tweepy import Stream
-import tweepy, time, signal, termios, struct, fcntl, sys, readline
+import tweepy, time, signal, termios, struct, fcntl, sys, readline, serial
 import settings, auth
 
 __author__ = 'Josh Johnson, Riley Hirn'
 
 #count of tweets
 count = 0
+ard = serial.Serial(settings.ardport, 9600, timeout=5)
 
 def main():
     print "\n"
@@ -29,7 +30,7 @@ def main():
     print chr(27) + "[2J"
 
     stream = Stream(authorization, listener)
-    print 'Now scanning for #' + settings.hashtag + '...\n\n'
+    print 'Now scanning for #' + settings.hashtag + '...\n\n\n\n'
 
     stream.filter(track=['#' + settings.hashtag])
 
@@ -48,11 +49,13 @@ class TweetListener(StreamListener):
 
 		print '\n'
 
-		global count
-		count += 1
-		print "\033[32m-----------------------\033[0m"
-		print "\033[7mTweets scanned: %d\033[0m" % (count,)
-		print "\033[32m-----------------------\033[0m"
+		global ard, count
+        ard.write(tweet.text.encode('utf-8'))
+
+        count += 1
+        print "\033[32m-----------------------\033[0m"
+        print "\033[7mTweets scanned: %d\033[0m" % (count,)
+        print "\033[32m-----------------------\033[0m"
 
 	def on_error(self, status_code):
 		print '\033[22;31mTweet error: \033[4;31m' + str(status_code) + '\033[0m'
@@ -77,31 +80,27 @@ def debug_print(text):
 	if settings.debug:
 		print "\033[0m\033[22;36m" + text.encode('utf-8') + '\033[0m'
 
-# Parse the tweet for selection and handle it accordingly
-def sendTweet(tweet):
-    print "Sending."
-
 def reconnect(wait):
 
-		for i in range(wait, 0, -1):
-			print "Reconnecting in %d seconds..." % (i,)
-			time.sleep(1)
-			blank_current_readline()
+	for i in range(wait, 0, -1):
+		print "Reconnecting in %d seconds..." % (i,)
+		time.sleep(1)
+		blank_current_readline()
 
-		print 'Reconnecting...'
+	print 'Reconnecting...'
 
-		auth = tweepy.OAuthHandler(settings.cKey, settings.cSecret)
-		auth.set_access_token(settings.aToken, settings.aSecret)
+	auth = tweepy.OAuthHandler(settings.cKey, settings.cSecret)
+	auth.set_access_token(settings.aToken, settings.aSecret)
 
-		api = tweepy.API(auth)
-		listener = TweetListener()
+	api = tweepy.API(auth)
+	listener = TweetListener()
 
-		debug_print('\nStarting stream for #%s...' % (settings.hashtag1,))
+	debug_print('\nStarting stream for #%s...' % (settings.hashtag1,))
 
-		stream = Stream(auth, listener)
-		print 'Now scanning for #' + settings.hashtag1 + '...'
+	stream = Stream(auth, listener)
+	print 'Now scanning for #' + settings.hashtag1 + '...'
 
-		stream.filter(track=['#' + settings.hashtag1])
+	stream.filter(track=['#' + settings.hashtag1])
 
 def blank_current_readline():
 	# Next line said to be reasonably portable for various Unixes
