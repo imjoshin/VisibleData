@@ -1,7 +1,7 @@
 #include <string.h>
 const int readPin = A0;
 const int baud = 6;
-const int limit = 130;
+const int limit = 110;
 
 //#define debug
 

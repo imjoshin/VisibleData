@@ -68,7 +68,7 @@ def printAndSend(status):
     print 'Timestamp: \033[36m%s\033[0m' % (status.created_at - datetime.timedelta(hours=5))
     print '\n'
 
-    text = '@%s: %s\n' % (status.user.screen_name, '' + status.text.encode('ascii','ignore').replace('\n', ' '))
+    text = '@%s: %s\n' % (status.user.screen_name, '' + status.text.encode('ascii','ignore').replace('\n', ' / ').replace('\'', '').replace('\"', ''))
     text = filterText(text)
     #print "range: 0 to " + str(int(math.ceil(len(text) / 64)))
     for i in range(0, int(math.ceil(len(text) / 64)) + 1):
