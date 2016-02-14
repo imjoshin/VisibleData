@@ -24,7 +24,7 @@ void loop() {
   while(millis() < next) {}
   
   
-  for(i = 0; i < 12; i++) {
+  for(i = 0; i < 11; i++) {
     bits[i] = 0;
     if(analogRead(readPin) > limit) {
       bits[i] = 1;
@@ -42,7 +42,7 @@ void loop() {
   check[0] = (bits[0] + bits[2] + bits[4] + bits[6] + bits[8] + bits[10]) % 2;
   check[1] = (bits[1] + bits[2] + bits[5] + bits[6] + bits[9] + bits[10]) % 2;
   check[2] = (bits[3] + bits[4] + bits[5] + bits[6] + bits[11]) % 2;
-  check[3] = (bits[7] + bits[8] + bits[9] + bits[10] + bits[11]) % 2;
+  check[3] = (bits[7] + bits[8] + bits[9] + bits[10]) % 2;
     
   i = ((check[0]) + (check[1] * 2) + (check[2] *4) + (check[3] * 8)) - 1;
   if(i != -1) {
@@ -57,7 +57,7 @@ void loop() {
   #ifdef debug
   Serial.print("  in: ");
   #endif
-  for(i = 0; i < 12; i++) {
+  for(i = 0; i < 11; i++) {
     if(i == 0 || i == 1 || i == 3 || i == 7)
       continue;
     in = in << 1;

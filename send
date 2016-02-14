@@ -4,7 +4,7 @@ c=0
 while true
 do
 c=$((c+1))
-echo '101 foot test :) ' $c > /dev/ttyACM0
+echo 'Hello World! :D ' $c > /dev/ttyACM0
 sleep 5
 done
 

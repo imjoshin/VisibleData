@@ -20,6 +20,7 @@ void loop() {
     
     
     //create hamming code
+    in = in << 1;
     bits[2] = in < 0 ? 1 : 0;
     in = in << 1;
     bits[4] = in < 0 ? 1 : 0;
@@ -33,8 +34,6 @@ void loop() {
     bits[9] = in < 0 ? 1 : 0;
     in = in << 1;
     bits[10] = in < 0 ? 1 : 0;
-    in = in << 1;
-    bits[11] = in < 0 ? 1 : 0;
     in = in << 1;
     
     /*
@@ -51,7 +50,7 @@ void loop() {
     bits[0] = (bits[2] + bits[4] + bits[6] + bits[8] + bits[10]) % 2;
     bits[1] = (bits[2] + bits[5] + bits[6] + bits[9] + bits[10]) % 2;
     bits[3] = (bits[4] + bits[5] + bits[6] + bits[11]) % 2;
-    bits[7] = (bits[8] + bits[9] + bits[10] + bits[11]) % 2;
+    bits[7] = (bits[8] + bits[9] + bits[10]) % 2;
     /*
     Serial.print(bits[0]);
     Serial.print(bits[1]);
@@ -73,7 +72,7 @@ void loop() {
     while(millis() < next) {}
     
     //send 8 bits of the char
-    for(i = 0; i < 12; i++) {
+    for(i = 0; i < 11; i++) {
       if(bits[i]) {
         digitalWrite(ledPin, HIGH);
       } else {
